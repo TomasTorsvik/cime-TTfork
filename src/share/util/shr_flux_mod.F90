@@ -159,7 +159,7 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
            &               r16O, rhdo, r18O, &
            &               evap  ,evap_16O, evap_HDO, evap_18O, &
            &               taux  ,tauy  ,tref  ,qref  ,   &
-           &               duu10n,  ustar_sv   ,re_sv ,ssq_sv,   &
+           &               duu10n, uasn, vasn,  ustar_sv   ,re_sv ,ssq_sv,   &
            &               missval    )
 
 ! !USES:
@@ -205,6 +205,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
    real(R8),intent(out)  ::  tref (nMax) ! diag:  2m ref height T     (K)
    real(R8),intent(out)  ::  qref (nMax) ! diag:  2m ref humidity (kg/kg)
    real(R8),intent(out)  :: duu10n(nMax) ! diag: 10m wind speed squared (m/s)^2
+   real(R8),intent(out)  ::   uasn(nMax) ! diag: 10m wind speed squared (m/s)^2
+   real(R8),intent(out)  ::   vasn(nMax) ! diag: 10m wind speed squared (m/s)^2
 
    real(R8),intent(out),optional :: ustar_sv(nMax) ! diag: ustar
    real(R8),intent(out),optional :: re_sv   (nMax) ! diag: sqrt of exchange coefficient (water)
@@ -470,6 +472,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
         qref(n) =  qbot(n) - delq*fac
 
         duu10n(n) = u10n*u10n ! 10m wind speed squared
+        uasn(n) = (ubot(n) - us(n)) * rd / rdn + us(n)
+        vasn(n) = (vbot(n) - vs(n)) * rd / rdn + vs(n)
 
         !------------------------------------------------------------
         ! optional diagnostics, needed for water tracer fluxes (dcn)
@@ -493,6 +497,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
         tauy  (n) = spval  ! y surface stress (N)
         tref  (n) = spval  !  2m reference height temperature (K)
         qref  (n) = spval  !  2m reference height humidity (kg/kg)
+        uasn(n) = spval  ! 10m wind speed squared (m/s)^2
+        vasn(n) = spval  ! 10m wind speed squared (m/s)^2
         duu10n(n) = spval  ! 10m wind speed squared (m/s)^2
 
         if (present(ustar_sv)) ustar_sv(n) = spval
@@ -552,7 +558,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
         tref(n) = trf
         qref(n) = qrf
         duu10n(n) = urf**2+vrf**2 
-
+        uasn(n) = urf + us(n)
+        vasn(n) = vrf + vs(n)
         !------------------------------------------------------------
         ! optional diagnostics, needed for water tracer fluxes (dcn)
         !------------------------------------------------------------
@@ -576,6 +583,8 @@ SUBROUTINE shr_flux_atmOcn(nMax  ,zbot  ,ubot  ,vbot  ,thbot ,  prec_gust, gust_
         tref     (n) = spval  !  2m reference height temperature (K)
         qref     (n) = spval  !  2m reference height humidity (kg/kg)
         duu10n   (n) = spval  ! 10m wind speed squared (m/s)^2
+        uasn     (n) = spval  ! 10m zonal wind (m/s)
+        vasn     (n) = spval  ! 10m meridional wind (m/s)
 
         if (present(ustar_sv)) ustar_sv(n) = spval
         if (present(re_sv   )) re_sv   (n) = spval
@@ -627,7 +636,7 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
                            warmMaxInc, windMaxInc, qSolInc, windInc, nInc, &
                            tBulk, tSkin, tSkin_day, tSkin_night,           &
                            cSkin, cSkin_night, secs ,dt,                   &
-                           duu10n,  ustar_sv   ,re_sv ,ssq_sv,             &
+                           duu10n, uasn, vasn,   ustar_sv   ,re_sv ,ssq_sv,&
                            missval, cold_start    )
 ! !USES:
 
@@ -709,6 +718,8 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
    real(R8),intent(out)  ::  tref (nMax) ! diag:  2m ref height T     (K)
    real(R8),intent(out)  ::  qref (nMax) ! diag:  2m ref humidity (kg/kg)
    real(R8),intent(out)  :: duu10n(nMax) ! diag: 10m wind speed squared (m/s)^2
+   real(R8),intent(out)  ::   uasn(nMax) ! diag: 10m zonal wind (m/s)
+   real(R8),intent(out)  ::   vasn(nMax) ! diag: 10m meridional wind (m/s)
 
    real(R8),intent(out),optional :: ustar_sv(nMax) ! diag: ustar
    real(R8),intent(out),optional :: re_sv   (nMax) ! diag: sqrt of exchange coefficient (water)
@@ -1242,6 +1253,8 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
          qref(n) =  qbot(n) - delq*fac
 
          duu10n(n) = u10n*u10n ! 10m wind speed squared
+         uasn(n) = (ubot(n) - us(n)) * rd / rdn + us(n)
+         vasn(n) = (vbot(n) - vs(n)) * rd / rdn + vs(n)
 !=============================================================
    ELSE IF (flux_scheme .eq. 1) THEN! use COARE algorithm
 !=============================================================
@@ -1249,6 +1262,8 @@ SUBROUTINE shr_flux_atmOcn_diurnal &
          qref(n) = qrf
          duu10n(n) = urf**2+vrf**2 
          u10n = sqrt(duu10n(n))
+         uasn(n) = urf + us(n)
+         vasn(n) = vrf + vs(n)
 !=============================================================
    ENDIF
 !=============================================================

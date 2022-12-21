@@ -1151,6 +1151,28 @@ contains
     attname  = 'u10'
     call metadata_set(attname, longname, stdname, units)
 
+    ! 10 meter zonal wind
+    call seq_flds_add(i2x_states,"Si_uas")
+    call seq_flds_add(xao_states,"So_uas")
+    call seq_flds_add(l2x_states,"Sl_uas")
+    call seq_flds_add(x2a_states,"Sx_uas")
+    longname = '10m zonal wind'
+    stdname  = '10m_zonal_wind'
+    units    = 'm'
+    attname  = 'uas'
+    call metadata_set(attname, longname, stdname, units)
+
+    ! 10 meter meridional wind
+    call seq_flds_add(i2x_states,"Si_vas")
+    call seq_flds_add(xao_states,"So_vas")
+    call seq_flds_add(l2x_states,"Sl_vas")
+    call seq_flds_add(x2a_states,"Sx_vas")
+    longname = '10m meridional wind'
+    stdname  = '10m_meridional_wind'
+    units    = 'm'
+    attname  = 'vas'
+    call metadata_set(attname, longname, stdname, units)
+
     ! Zonal surface stress"
     call seq_flds_add(l2x_fluxes,"Fall_taux")
     call seq_flds_add(xao_fluxes,"Faox_taux")

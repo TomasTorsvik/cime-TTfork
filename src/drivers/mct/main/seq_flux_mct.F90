@@ -66,6 +66,8 @@ module seq_flux_mct
   real(r8), allocatable ::  tref (:)  ! diagnostic:  2m ref T
   real(r8), allocatable ::  qref (:)  ! diagnostic:  2m ref Q
   real(r8), allocatable :: duu10n(:)  ! diagnostic: 10m wind speed squared
+  real(r8), allocatable ::  uas  (:)  ! diagnostic: 10m zonal wind
+  real(r8), allocatable ::  vas  (:)  ! diagnostic: 10m zonal wind
 
   real(r8), allocatable :: fswpen (:) ! fraction of sw penetrating ocn surface layer
   real(r8), allocatable :: ocnsal (:) ! ocean salinity
@@ -157,6 +159,8 @@ module seq_flux_mct
   integer :: index_xao_So_re
   integer :: index_xao_So_ssq
   integer :: index_xao_So_duu10n
+  integer :: index_xao_So_uas
+  integer :: index_xao_So_vas
   integer :: index_xao_So_u10
   integer :: index_xao_So_fswpen
   integer :: index_xao_So_warm_diurn
@@ -314,6 +318,12 @@ contains
     allocate(duu10n(nloc),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate duu10n',ier)
     duu10n = 0.0_r8
+    allocate(uas(nloc),stat=ier)
+    if(ier/=0) call mct_die(subName,'allocate uas',ier)
+    uas = 0.0_r8
+    allocate(vas(nloc),stat=ier)
+    if(ier/=0) call mct_die(subName,'allocate vas',ier)
+    vas = 0.0_r8
 
     !--- flux_diurnal cycle flux fields ---
     allocate(uGust(nloc),stat=ier)
@@ -647,6 +657,10 @@ contains
     if(ier/=0) call mct_die(subName,'allocate qref',ier)
     allocate(duu10n(nloc_a2o),stat=ier)
     if(ier/=0) call mct_die(subName,'allocate duu10n',ier)
+    allocate(uas(nloc_a2o),stat=ier)
+    if(ier/=0) call mct_die(subName,'allocate uas',ier)
+    allocate(vas(nloc_a2o),stat=ier)
+    if(ier/=0) call mct_die(subName,'allocate vas',ier)
 
     ! set emask
 
@@ -897,6 +911,8 @@ contains
     integer(in) :: index_ustar
     integer(in) :: index_ssq
     integer(in) :: index_re
+    integer(in) :: index_uas
+    integer(in) :: index_vas
     integer(in) :: index_u10
     integer(in) :: index_taux
     integer(in) :: index_tauy
@@ -1025,7 +1041,7 @@ contains
             warmMaxInc, windMaxInc, qSolInc, windInc, nInc, &
             tbulk, tskin, tskin_day, tskin_night, &
             cskin, cskin_night, tod, dt,          &
-            duu10n,ustar, re  , ssq , missval = 0.0_r8, &
+            duu10n,uas,vas,ustar, re  , ssq , missval = 0.0_r8, &
             cold_start=cold_start)
     else
        call shr_flux_atmocn (nloc_a2o , zbot , ubot, vbot, thbot, prec_gust, gust_fac, &
@@ -1033,7 +1049,7 @@ contains
             tocn , emask, sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux, tauy, tref, qref , &
-            duu10n,ustar, re  , ssq , missval = 0.0_r8 )
+            duu10n,uas,vas,ustar, re  , ssq , missval = 0.0_r8 )
     endif
 
     !--- create temporary aVects on exchange, atm, or ocn decomp as needed
@@ -1054,6 +1070,8 @@ contains
     index_ustar  = mct_aVect_indexRA(xaop_ae,"So_ustar")
     index_ssq    = mct_aVect_indexRA(xaop_ae,"So_ssq")
     index_re     = mct_aVect_indexRA(xaop_ae,"So_re")
+    index_uas    = mct_aVect_indexRA(xaop_ae,"So_uas")
+    index_vas    = mct_aVect_indexRA(xaop_ae,"So_vas")
     index_u10    = mct_aVect_indexRA(xaop_ae,"So_u10")
     index_taux   = mct_aVect_indexRA(xaop_ae,"Faox_taux")
     index_tauy   = mct_aVect_indexRA(xaop_ae,"Faox_tauy")
@@ -1092,6 +1110,8 @@ contains
        xaop_oe%rAttr(index_lwup  ,io) = xaop_oe%rAttr(index_lwup  ,io) + lwup(n)* wt
        xaop_oe%rAttr(index_duu10n,io) = xaop_oe%rAttr(index_duu10n,io) + duu10n(n)*wt
        xaop_oe%rAttr(index_u10   ,io) = xaop_oe%rAttr(index_u10   ,io) + sqrt(duu10n(n))*wt
+       xaop_oe%rAttr(index_uas   ,io) = xaop_oe%rAttr(index_uas   ,io) + uas(n)*wt
+       xaop_oe%rAttr(index_vas   ,io) = xaop_oe%rAttr(index_vas   ,io) + vas(n)*wt
        xaop_oe%rAttr(index_sumwt ,io) = xaop_oe%rAttr(index_sumwt ,io) + wt
     enddo
 
@@ -1126,6 +1146,8 @@ contains
        xaop_ae%rAttr(index_lwup  ,ia) = xaop_ae%rAttr(index_lwup  ,ia) + lwup(n)* wt
        xaop_ae%rAttr(index_duu10n,ia) = xaop_ae%rAttr(index_duu10n,ia) + duu10n(n)*wt
        xaop_ae%rAttr(index_u10   ,ia) = xaop_ae%rAttr(index_u10   ,ia) + sqrt(duu10n(n))*wt
+       xaop_ae%rAttr(index_uas   ,ia) = xaop_ae%rAttr(index_uas   ,ia) + uas(n)*wt
+       xaop_ae%rAttr(index_vas   ,ia) = xaop_ae%rAttr(index_vas   ,ia) + vas(n)*wt
        xaop_ae%rAttr(index_sumwt ,ia) = xaop_ae%rAttr(index_sumwt ,ia) + wt
     enddo
 
@@ -1231,6 +1253,8 @@ contains
        index_xao_So_ustar  = mct_aVect_indexRA(xao,'So_ustar')
        index_xao_So_re     = mct_aVect_indexRA(xao,'So_re')
        index_xao_So_ssq    = mct_aVect_indexRA(xao,'So_ssq')
+       index_xao_So_uas    = mct_aVect_indexRA(xao,'So_uas')
+       index_xao_So_vas    = mct_aVect_indexRA(xao,'So_vas')
        index_xao_So_u10    = mct_aVect_indexRA(xao,'So_u10')
        index_xao_So_duu10n = mct_aVect_indexRA(xao,'So_duu10n')
        index_xao_Faox_taux = mct_aVect_indexRA(xao,'Faox_taux')
@@ -1435,7 +1459,7 @@ contains
             warmMaxInc, windMaxInc, qSolInc, windInc, nInc, &
             tbulk, tskin, tskin_day, tskin_night, &
             cskin, cskin_night, tod, dt,          &
-            duu10n,ustar, re  , ssq, &
+            duu10n, uas, vas, ustar, re  , ssq, &
                                 !missval should not be needed if flux calc
                                 !consistent with mrgx2a fraction
                                 !duu10n,ustar, re  , ssq, missval = 0.0_r8 )
@@ -1446,7 +1470,7 @@ contains
             tocn , emask, sen , lat , lwup , &
             roce_16O, roce_HDO, roce_18O,    &
             evap , evap_16O, evap_HDO, evap_18O, taux , tauy, tref, qref , &
-            duu10n,ustar, re  , ssq)
+            duu10n, uas, vas, ustar, re  , ssq)
        !missval should not be needed if flux calc
        !consistent with mrgx2a fraction
        !duu10n,ustar, re  , ssq, missval = 0.0_r8 )
@@ -1470,6 +1494,8 @@ contains
           xao%rAttr(index_xao_Faox_lwup,n) = lwup(n)
           xao%rAttr(index_xao_So_duu10n,n) = duu10n(n)
           xao%rAttr(index_xao_So_u10   ,n) = sqrt(duu10n(n))
+          xao%rAttr(index_xao_So_uas   ,n) = uas(n)
+          xao%rAttr(index_xao_So_vas   ,n) = vas(n)
           xao%rAttr(index_xao_So_warm_diurn       ,n) = warm(n)
           xao%rAttr(index_xao_So_salt_diurn       ,n) = salt(n)
           xao%rAttr(index_xao_So_speed_diurn      ,n) = speed(n)
