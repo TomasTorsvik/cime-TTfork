@@ -1356,6 +1356,16 @@ contains
     attname  = 'Si_ifrac'
     call metadata_set(attname, longname, stdname, units)
 
+    ! Sea ice salinity
+    call seq_flds_add(i2x_states,"Si_sisal")
+    call seq_flds_add(x2o_states,"Si_sisal")
+    call seq_flds_add(x2w_states,"Si_sisal")
+    longname = 'Mean sea ice salinity'
+    stdname  = 'mean_sea_ice_salinity'
+    units    = 'ppt'
+    attname  = 'Si_sisal'
+    call metadata_set(attname, longname, stdname, units)
+
     if (trim(cime_model) == 'e3sm') then
        ! Sea ice basal pressure
        call seq_flds_add(i2x_states,"Si_bpress")
