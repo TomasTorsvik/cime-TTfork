@@ -1466,6 +1466,15 @@ contains
     attname  = 'So_s'
     call metadata_set(attname, longname, stdname, units)
 
+    ! Sea ice salinity
+    call seq_flds_add(i2x_states,"Si_sisal")
+    call seq_flds_add(x2o_states,"Si_sisal")
+    longname = 'Sea ice salinity'
+    stdname  = 'sea_ice_salinity'
+    units    = 'ppt'
+    attname  = 'Si_sisal'
+    call metadata_set(attname, longname, stdname, units)
+
     ! Zonal sea water velocity
     call seq_flds_add(o2x_states,"So_u")
     call seq_flds_add(x2i_states,"So_u")
