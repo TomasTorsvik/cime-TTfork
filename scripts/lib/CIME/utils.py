@@ -2,7 +2,8 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, fnmatch
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, fnmatch
+import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
@@ -315,6 +316,19 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
+def _load_module_from_source(module_name, file_path):
+    """
+    Load a module given its name and file path
+
+    Example usage:
+    foo = _load_module_from_source("module.name", "/path/to/file.py")
+    """
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from_dir=None):
     """
     This code will try to import and run each cmd as a subroutine
@@ -334,7 +348,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from
 
     if not do_run_cmd:
         try:
-            mod = imp.load_source(subname, cmd)
+            mod = _load_module_from_source(subname, cmd)
             logger.info("   Calling {}".format(cmd))
             if logfile:
                 with open(logfile,"w") as log_fd:
