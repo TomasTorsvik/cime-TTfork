@@ -4,6 +4,7 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 """
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, fnmatch
 import importlib.util
+import importlib.machinery
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
@@ -316,18 +317,33 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
-def _load_module_from_source(module_name, file_path):
+def _import_module_from_file(module_name, file_path):
     """
     Load a module given its name and file path
 
     Example usage:
-    foo = _load_module_from_source("module.name", "/path/to/file.py")
+    foo = _import_module_from_file("module.name", "/path/to/file")
     """
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
+    loader = importlib.machinery.SourceFileLoader(module_name, file_path)
+    try:
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        if spec is None:
+            raise ImportError(f"Could not load spec for: {file_path}")
+        module = importlib.util.module_from_spec(spec)
+
+        # Add to sys modules (recommended for caching)
+        sys.modules[module_name] = module
+
+        # Execute module loader
+        spec.loader.exec_module(module)
+        return module
+
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found.")
+        return None
+    except Exception as e:
+        print(f"Error loading module {module_name}: {e}")
+        return None
 
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from_dir=None):
     """
@@ -348,7 +364,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from
 
     if not do_run_cmd:
         try:
-            mod = _load_module_from_source(subname, cmd)
+            mod = _import_module_from_file(subname, cmd)
             logger.info("   Calling {}".format(cmd))
             if logfile:
                 with open(logfile,"w") as log_fd:
