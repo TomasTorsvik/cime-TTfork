@@ -18,7 +18,7 @@ def bless_namelists(test_name, test_dir, report_only, force, baseline_name, base
     # Update namelist files
     logger.info("Test '{}' had namelist diff".format(test_name))
     if (not report_only and
-        (force or six.moves.input("Update namelists (y/n)? ").upper() in ["Y", "YES"])):
+        (force or input("Update namelists (y/n)? ").upper() in ["Y", "YES"])):
 
         if baseline_name is None:
             stat, baseline_name, _ = run_cmd("./xmlquery --value BASELINE_NAME_CMP", from_dir=test_dir)
@@ -62,7 +62,7 @@ def bless_history(test_name, test_dir, baseline_name, baseline_root, report_only
             else:
                 logger.info(cmp_comments)
                 if (not report_only and
-                    (force or six.moves.input("Update this diff (y/n)? ").upper() in ["Y", "YES"])):
+                    (force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"])):
                     gen_result, gen_comments = generate_baseline(case, baseline_dir=baseline_full_dir)
                     if not gen_result:
                         logger.warning("Hist file bless FAILED for test {}".format(test_name))

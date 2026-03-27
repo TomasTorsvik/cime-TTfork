@@ -56,9 +56,9 @@ class TestReporter(GenericXML):
         # Post test result XML to CESM test database
         #
         xmlstr = self.get_raw_record()
-        username=six.moves.input("Username:")
+        username = input("Username:")
         os.system("stty -echo")
-        password=six.moves.input("Password:")
+        password = input("Password:")
         os.system("stty echo")
         params={'username':username,'password':password,'testXML':xmlstr}
         url="https://csegweb.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
