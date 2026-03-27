@@ -1,7 +1,7 @@
 import CIME.utils
 from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root, get_model
 from CIME.XML.machines import Machines
-import six, sys, os
+import sys, os
 
 # Expect that, if a model wants to use python-based test lists, they will have a file
 # config/$model/tests.py , containing a test dictionary called _TESTS
@@ -93,27 +93,27 @@ def get_test_suite(suite, machine=None, compiler=None):
     tests = []
     for item in tests_raw:
         test_mod = None
-        if (isinstance(item, six.string_types)):
+        if (isinstance(item, str)):
             test_name = item
         else:
             expect(isinstance(item, tuple), "Bad item type for item '{}'".format(str(item)))
             expect(len(item) in [2, 3], "Expected two or three items in item '{}'".format(str(item)))
-            expect(isinstance(item[0], six.string_types), "Expected string in first field of item '{}'".format(str(item)))
-            expect(isinstance(item[1], six.string_types), "Expected string in second field of item '{}'".format(str(item)))
+            expect(isinstance(item[0], str), "Expected string in first field of item '{}'".format(str(item)))
+            expect(isinstance(item[1], str), "Expected string in second field of item '{}'".format(str(item)))
 
             test_name = item[0]
             if (len(item) == 2):
                 test_mod = item[1]
             else:
-                expect(type(item[2]) in [six.string_types, tuple], "Expected string or tuple for third field of item '{}'".format(str(item)))
-                test_mod_machines = [item[2]] if isinstance(item[2], six.string_types) else item[2]
+                expect(type(item[2]) in [str, tuple], "Expected string or tuple for third field of item '{}'".format(str(item)))
+                test_mod_machines = [item[2]] if isinstance(item[2], str) else item[2]
                 if (machine in test_mod_machines):
                     test_mod = item[1]
 
         tests.append(CIME.utils.get_full_test_name(test_name, machine=machine, compiler=compiler, testmod=test_mod))
 
     if (inherits_from is not None):
-        inherits_from = [inherits_from] if isinstance(inherits_from, six.string_types) else inherits_from
+        inherits_from = [inherits_from] if isinstance(inherits_from, str) else inherits_from
         for inherits in inherits_from:
             inherited_tests = get_test_suite(inherits, machine, compiler)
 
@@ -238,14 +238,14 @@ def get_recommended_test_time(test_full_name):
         _, rec_time, tests_raw = _ALL_TESTS[suite]
         for item in tests_raw:
             test_mod = None
-            if (isinstance(item, six.string_types)):
+            if (isinstance(item, str)):
                 test_name = item
             else:
                 test_name = item[0]
                 if (len(item) == 2):
                     test_mod = item[1]
                 else:
-                    test_mod_machines = [item[2]] if isinstance(item[2], six.string_types) else item[2]
+                    test_mod_machines = [item[2]] if isinstance(item[2], str) else item[2]
                     if (machine in test_mod_machines):
                         test_mod = item[1]
 
