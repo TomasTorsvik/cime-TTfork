@@ -10,7 +10,7 @@ import stat as statlib
 import six
 from contextlib import contextmanager
 #pylint: disable=import-error
-from six.moves import configparser
+import configparser
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
