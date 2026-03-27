@@ -317,6 +317,7 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
+# Should only be called from run_sub_or_cmd()
 def _import_module_from_file(module_name, file_path):
     """
     Load a module given its name and file path
