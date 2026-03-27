@@ -2,7 +2,9 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, fnmatch
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, fnmatch
+import importlib.util
+import importlib.machinery
 import errno, signal, warnings, filecmp
 import stat as statlib
 import six
@@ -315,6 +317,35 @@ def _convert_to_fd(filearg, from_dir, mode="a"):
 
 _hack=object()
 
+# Should only be called from run_sub_or_cmd()
+def _import_module_from_file(module_name, file_path):
+    """
+    Load a module given its name and file path
+
+    Example usage:
+    foo = _import_module_from_file("module.name", "/path/to/file")
+    """
+    loader = importlib.machinery.SourceFileLoader(module_name, file_path)
+    try:
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        if spec is None:
+            raise ImportError(f"Could not load spec for: {file_path}")
+        module = importlib.util.module_from_spec(spec)
+
+        # Add to sys modules (recommended for caching)
+        sys.modules[module_name] = module
+
+        # Execute module loader
+        spec.loader.exec_module(module)
+        return module
+
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found.")
+        return None
+    except Exception as e:
+        print(f"Error loading module {module_name}: {e}")
+        return None
+
 def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from_dir=None):
     """
     This code will try to import and run each cmd as a subroutine
@@ -334,7 +365,7 @@ def run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile=None, case=None, from
 
     if not do_run_cmd:
         try:
-            mod = imp.load_source(subname, cmd)
+            mod = _import_module_from_file(subname, cmd)
             logger.info("   Calling {}".format(cmd))
             if logfile:
                 with open(logfile,"w") as log_fd:
