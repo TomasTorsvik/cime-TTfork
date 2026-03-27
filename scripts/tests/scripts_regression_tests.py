@@ -16,7 +16,7 @@ sys.path.append(LIB_DIR)
 # Remove all pyc files to ensure we're testing the right things
 import subprocess, argparse
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
-import six
+import io
 from six import assertRaisesRegex
 
 
@@ -2078,8 +2078,8 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = six.StringIO(str(build_xml))
-    output = six.StringIO()
+    xml = io.StringIO(str(build_xml))
+    output = io.StringIO()
     output_format = None
     if build_system == "Makefile":
         output_format = "make"
