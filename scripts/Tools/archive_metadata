@@ -24,8 +24,10 @@ from string import Template
 from standard_script_setup import *
 from CIME.case       import Case
 from CIME.utils      import is_last_process_complete
-# six is for py2/py3 compatibility
-from six.moves      import configparser, urllib
+import urllib.parse
+import urllib.request
+import urllib.error
+import configparser
 
 # define global constants
 logger = logging.getLogger(__name__)
