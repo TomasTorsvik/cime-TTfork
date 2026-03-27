@@ -5,7 +5,7 @@ from CIME.test_status import *
 from CIME.hist_utils import generate_baseline, compare_baseline
 from CIME.case import Case
 
-import os, glob, time, six
+import os, glob, time
 logger = logging.getLogger(__name__)
 
 ###############################################################################
