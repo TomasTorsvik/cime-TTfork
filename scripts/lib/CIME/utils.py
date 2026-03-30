@@ -7,10 +7,9 @@ import importlib.util
 import importlib.machinery
 import errno, signal, warnings, filecmp
 import stat as statlib
-import six
 from contextlib import contextmanager
 #pylint: disable=import-error
-from six.moves import configparser
+import configparser
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
@@ -431,12 +430,12 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     # Real defaults for these value should be subprocess.PIPE
     if arg_stdout is _hack:
         arg_stdout = subprocess.PIPE
-    elif isinstance(arg_stdout, six.string_types):
+    elif isinstance(arg_stdout, str):
         arg_stdout = _convert_to_fd(arg_stdout, from_dir)
 
     if arg_stderr is _hack:
         arg_stderr = subprocess.STDOUT if combine_output else subprocess.PIPE
-    elif isinstance(arg_stderr, six.string_types):
+    elif isinstance(arg_stderr, str):
         arg_stderr = _convert_to_fd(arg_stdout, from_dir)
 
     if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
@@ -468,17 +467,10 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
             pass
 
     stat = proc.wait()
-    if six.PY2:
-        if isinstance(arg_stdout, file): # pylint: disable=undefined-variable
-            arg_stdout.close() # pylint: disable=no-member
-        if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout: # pylint: disable=undefined-variable
-            arg_stderr.close() # pylint: disable=no-member
-    else:
-        if isinstance(arg_stdout, io.IOBase):
-            arg_stdout.close() # pylint: disable=no-member
-        if isinstance(arg_stderr, io.IOBase) and arg_stderr is not arg_stdout:
-            arg_stderr.close() # pylint: disable=no-member
-
+    if isinstance(arg_stdout, io.IOBase):
+        arg_stdout.close() # pylint: disable=no-member
+    if isinstance(arg_stderr, io.IOBase) and arg_stderr is not arg_stdout:
+        arg_stderr.close() # pylint: disable=no-member
 
     if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
         if stat != 0:
@@ -515,11 +507,11 @@ def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
         errput = output if not errput else errput
         if errput is None:
             if combine_output:
-                if isinstance(arg_stdout, six.string_types):
+                if isinstance(arg_stdout, str):
                     errput = "See {}".format(_get_path(arg_stdout, from_dir))
                 else:
                     errput = ""
-            elif isinstance(arg_stderr, six.string_types):
+            elif isinstance(arg_stderr, str):
                 errput = "See {}".format(_get_path(arg_stderr, from_dir))
             else:
                 errput = ""
@@ -1167,11 +1159,11 @@ def convert_to_string(value, type_str=None, vid=""):
     >>> convert_to_string(6.01, type_str="real") == '6.01'
     True
     """
-    if value is not None and not isinstance(value, six.string_types):
+    if value is not None and not isinstance(value, str):
         if type_str == "char":
-            expect(isinstance(value, six.string_types), "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, str), "Wrong type for entry id '{}'".format(vid))
         elif type_str == "integer":
-            expect(isinstance(value, six.integer_types), "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, int), "Wrong type for entry id '{}'".format(vid))
             value = str(value)
         elif type_str == "logical":
             expect(type(value) is bool, "Wrong type for entry id '{}'".format(vid))

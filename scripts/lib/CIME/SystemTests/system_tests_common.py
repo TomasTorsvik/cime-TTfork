@@ -10,7 +10,7 @@ from CIME.provenance import save_test_time
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
 import CIME.build as build
 
-import glob, gzip, time, traceback, six
+import glob, gzip, time, traceback
 
 logger = logging.getLogger(__name__)
 
@@ -245,7 +245,8 @@ class SystemTestsCommon(object):
         allgood = len(newestcpllogfiles)
         for cpllog in newestcpllogfiles:
             try:
-                if six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, 'rb').read():
+                termination_string = "SUCCESSFUL TERMINATION"
+                if termination_string.encode("latin-1") in gzip.open(cpllog, 'rb').read():
                     allgood = allgood - 1
             except BaseException as e:
                 msg = e.__str__()

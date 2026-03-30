@@ -16,9 +16,7 @@ sys.path.append(LIB_DIR)
 # Remove all pyc files to ensure we're testing the right things
 import subprocess, argparse
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
-import six
-from six import assertRaisesRegex
-
+import io
 
 import collections
 
@@ -1595,7 +1593,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             for batch_cmd in batch_commands:
                 self.assertTrue(isinstance(batch_cmd, collections.Sequence), "case.submit_jobs did not return a sequence of sequences")
                 self.assertTrue(len(batch_cmd) > batch_cmd_index, "case.submit_jobs returned internal sequences with length <= {}".format(batch_cmd_index))
-                self.assertTrue(isinstance(batch_cmd[1], six.string_types), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
+                self.assertTrue(isinstance(batch_cmd[1], str), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
                 batch_cmd_args = batch_cmd[1]
 
                 jobid_ident = "jobid"
@@ -2078,8 +2076,8 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = six.StringIO(str(build_xml))
-    output = six.StringIO()
+    xml = io.StringIO(str(build_xml))
+    output = io.StringIO()
     output_format = None
     if build_system == "Makefile":
         output_format = "make"
@@ -2324,7 +2322,7 @@ class G_TestMacrosBasic(unittest.TestCase):
         """The macro writer rejects a bad build system string."""
         maker = Compilers(MockMachines("mymachine", "SomeOS"), version=2.0)
         bad_string = "argle-bargle."
-        with assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 SystemExit,
                 "Unrecognized build system provided to write_macros: " + bad_string):
             get_macros(maker, "This string is irrelevant.", bad_string)
@@ -2426,7 +2424,7 @@ class H_TestMakeMacros(unittest.TestCase):
         """The macro writer dies if given many defaults."""
         xml1 = """<compiler><MPI_PATH>/path/to/default</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH>/path/to/other_default</MPI_PATH></compiler>"""
-        with assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 SystemExit,
                 "Variable MPI_PATH is set ambiguously in config_build.xml."):
             self.xml_to_tester(xml1+xml2)
@@ -2435,7 +2433,7 @@ class H_TestMakeMacros(unittest.TestCase):
         """The macro writer dies if given many matches for a given configuration."""
         xml1 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich2</MPI_PATH></compiler>"""
-        with assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 SystemExit,
                 "Variable MPI_PATH is set ambiguously in config_build.xml."):
             self.xml_to_tester(xml1+xml2)
@@ -2444,7 +2442,7 @@ class H_TestMakeMacros(unittest.TestCase):
         """The macro writer dies if given an ambiguous set of matches."""
         xml1 = """<compiler><MPI_PATH MPILIB="mpich">/path/to/mpich</MPI_PATH></compiler>"""
         xml2 = """<compiler><MPI_PATH DEBUG="FALSE">/path/to/mpi-debug</MPI_PATH></compiler>"""
-        with assertRaisesRegex(self,
+        with self.assertRaisesRegex(
                 SystemExit,
                 "Variable MPI_PATH is set ambiguously in config_build.xml."):
             self.xml_to_tester(xml1+xml2)
@@ -2576,7 +2574,7 @@ class H_TestMakeMacros(unittest.TestCase):
         tester.assert_variable_equals("FFLAGS", "-O2 -fast", env={"OPT_LEVEL": "2"})
         xml1 = """<compiler><FFLAGS><base>-O$SHELL{echo $ENV{OPT_LEVEL}} -fast</base></FFLAGS></compiler>"""
         err_msg = "Nesting not allowed.*"
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester(xml1)
 
     def test_config_variable_insertion(self):
@@ -2606,12 +2604,12 @@ class H_TestMakeMacros(unittest.TestCase):
         # references.
         xml1 = """<MPI_LIB_NAME><var>MPI_LIB_NAME</var></MPI_LIB_NAME>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester("<compiler>"+xml1+"</compiler>")
 
         xml1 = """<MPI_LIB_NAME>${MPI_LIB_NAME}</MPI_LIB_NAME>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester("<compiler>"+xml1+"</compiler>")
 
     def test_config_reject_cyclical_references(self):
@@ -2619,12 +2617,12 @@ class H_TestMakeMacros(unittest.TestCase):
         xml1 = """<MPI_LIB_NAME><var>MPI_PATH</var></MPI_LIB_NAME>"""
         xml2 = """<MPI_PATH><var>MPI_LIB_NAME</var></MPI_PATH>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester("<compiler>"+xml1+xml2+"</compiler>")
         xml1 = """<MPI_LIB_NAME>${MPI_PATH}</MPI_LIB_NAME>"""
         xml2 = """<MPI_PATH>${MPI_LIB_NAME}</MPI_PATH>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester("<compiler>"+xml1+xml2+"</compiler>")
 
     def test_variable_insertion_with_machine_specific_setting(self):
@@ -2633,14 +2631,14 @@ class H_TestMakeMacros(unittest.TestCase):
         xml2 = """<compiler MACH="{}"><MPI_LIB_NAME><var>MPI_PATH</var></MPI_LIB_NAME></compiler>""".format(self.test_machine)
         xml3 = """<compiler><MPI_PATH><var>MPI_LIB_NAME</var></MPI_PATH></compiler>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester(xml1+xml2+xml3)
 
         xml1 = """<compiler><MPI_LIB_NAME>something</MPI_LIB_NAME></compiler>"""
         xml2 = """<compiler MACH="{}"><MPI_LIB_NAME><var>MPI_PATH</var></MPI_LIB_NAME></compiler>""".format(self.test_machine)
         xml3 = """<compiler><MPI_PATH>${MPI_LIB_NAME}</MPI_PATH></compiler>"""
         err_msg = ".* has bad <var> references."
-        with assertRaisesRegex(self,SystemExit, err_msg):
+        with self.assertRaisesRegex(SystemExit, err_msg):
             self.xml_to_tester(xml1+xml2+xml3)
 
 

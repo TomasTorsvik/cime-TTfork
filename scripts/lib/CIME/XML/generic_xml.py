@@ -9,7 +9,6 @@ import xml.etree.ElementTree as ET
 #pylint: disable=import-error
 from distutils.spawn import find_executable
 import getpass
-import six
 from copy import deepcopy
 
 logger = logging.getLogger(__name__)
@@ -82,7 +81,7 @@ class GenericXML(object):
             self.tree, self.root = self._FILEMAP[infile]
         else:
             logger.debug("read: " + infile)
-            file_open = (lambda x: open(x, 'r', encoding='utf-8')) if six.PY3 else (lambda x: open(x, 'r'))
+            file_open = (lambda x: open(x, 'r', encoding='utf-8'))
             with file_open(infile) as fd:
                 self.read_fd(fd)
 
@@ -295,14 +294,14 @@ class GenericXML(object):
         if outfile is None:
             outfile = self.filename
 
-        logger.debug("write: " + (outfile if isinstance(outfile, six.string_types) else str(outfile)))
+        logger.debug("write: " + (outfile if isinstance(outfile, str) else str(outfile)))
 
         xmlstr = self.get_raw_record()
 
         # xmllint provides a better format option for the output file
         xmllint = find_executable("xmllint")
         if xmllint is not None:
-            if isinstance(outfile, six.string_types):
+            if isinstance(outfile, str):
                 run_cmd_no_fail("{} --format --output {} -".format(xmllint, outfile), input_str=xmlstr)
             else:
                 outfile.write(run_cmd_no_fail("{} --format -".format(xmllint), input_str=xmlstr))
@@ -428,7 +427,7 @@ class GenericXML(object):
         if item_data is None:
             return None
 
-        if not isinstance(item_data, six.string_types):
+        if not isinstance(item_data, str):
             return item_data
 
         for m in env_ref_re.finditer(item_data):
