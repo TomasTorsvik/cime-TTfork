@@ -1194,12 +1194,12 @@ using a fortran linker.
   </SLIBS>
 </compiler>
 
-<compiler MACH="fram">
+<compiler MACH="betzy" COMPILER="intel">
   <CPPDEFS>
    <append> -D$(OS) </append>
   </CPPDEFS>
   <FFLAGS>
-   <append> -xCORE-AVX2 -no-fma </append>
+   <append> -xavx2 -no-fma </append>
   </FFLAGS>
   <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
   <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
@@ -1208,18 +1208,18 @@ using a fortran linker.
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
     <append MODEL="blom"> -r8 </append>
-    <append MODEL="cam"> -init=zero,arrays </append>
+    <append MODEL="cice"> -init=zero,arrays </append>
   </FFLAGS>
-  <MPICC> mpiicc </MPICC>
-  <MPICXX> mpiicpc </MPICXX>
-  <MPIFC> mpiifort </MPIFC>
+  <MPICC> mpicc </MPICC>
+  <MPICXX> mpicpc </MPICXX>
+  <MPIFC> mpifort </MPIFC>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
     <append>-mkl=sequential -lnetcdff -lnetcdf</append>
   </SLIBS>
 </compiler>
 
-<compiler MACH="betzy" COMPILER="intel">
+<compiler MACH="olivia" COMPILER="intel">
   <CPPDEFS>
    <append> -D$(OS) </append>
   </CPPDEFS>
