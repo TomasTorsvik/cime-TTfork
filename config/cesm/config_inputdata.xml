@@ -29,4 +29,9 @@
     <address>https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/</address>
   </server>
 
+  <server>
+    <protocol>wget</protocol>
+    <address>https://osdf-data.gdex.ucar.edu/ncar/gdex/d651077/cesmdata/inputdata/</address>
+  </server>
+
 </inputdata>
