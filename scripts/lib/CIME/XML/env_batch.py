@@ -209,7 +209,7 @@ class EnvBatch(EnvBase):
 #        self.job_id = case.get_value("CASE") + os.path.splitext(job)[1]
 
         overrides["job_id"] = case.get_value("CASE") + os.path.splitext(job)[1]
-        if "pleiades" or "vilje" in case.get_value("MACH"):
+        if "pleiades" in case.get_value("MACH"):
             # pleiades jobname needs to be limited to 15 chars
             overrides["job_id"] = overrides["job_id"][:15]
 
