@@ -2284,7 +2284,7 @@ This allows using a different mpirun command to launch unit tests
     <BASELINE_ROOT>/cluster/work/projects/nn9560k/noresm_baselines</BASELINE_ROOT>
     <CCSM_CPRNC>$ENV{CPRNC_PREF}/bin/cprnc</CCSM_CPRNC>
     <GMAKE_J>8</GMAKE_J>
-    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+    <BATCH_SYSTEM>slurm_nor</BATCH_SYSTEM>
     <SUPPORTED_BY>noresmCommunity</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>256</MAX_TASKS_PER_NODE>
     <MAX_MPITASKS_PER_NODE>256</MAX_MPITASKS_PER_NODE>

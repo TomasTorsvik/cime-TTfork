@@ -545,7 +545,7 @@
     </queues>
   </batch_system>
 
-  <batch_system MACH="olivia" type="slurm">
+  <batch_system MACH="olivia" type="slurm_nor">
     <batch_submit>sbatch</batch_submit>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
@@ -559,7 +559,7 @@
     <!-- default job type, meant for CPU-only jobs needing less than a whole node (< 256 CPUs) -->
     <directives queue = "small">
       <directive> --partition=small</directive>
-      <directive> --mem={{ mem_per_node }}G</directive>
+      <directive> --mem-per-cpu=2560M</directive>
     </directives>
     <!-- meant for larger CPU-only jobs, needing at least one node (> 256 CPUs) -->
     <directives queue = "large">
@@ -569,7 +569,7 @@
     <directives queue = "devel">
       <directive> --partition=small</directive>
       <directive> --qos=devel</directive>
-      <directive> --mem={{ mem_per_node }}G</directive>
+      <directive> --mem-per-cpu=2560M</directive>
     </directives>
     <queues>
       <queue walltimemax="144:00:00" nodemin="1" nodemax="1" default="true">small</queue>
