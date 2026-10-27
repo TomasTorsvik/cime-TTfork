@@ -545,7 +545,7 @@
     </queues>
   </batch_system>
 
-  <batch_system MACH="olivia" type="slurm_nor">
+  <batch_system MACH="olivia" type="slurm">
     <batch_submit>sbatch</batch_submit>
     <submit_args>
       <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
@@ -554,13 +554,27 @@
     <directives>
       <directive> --ntasks={{ total_tasks }}</directive>
       <directive> --export=ALL</directive>
-    </directives> 
-    <directives queue = "normal">
-      <directive> --partition=normal</directive>
-      <directive> --mem-per-cpu=2700M</directive>
+      <directive> --network=single_node_vni</directive>
+    </directives>
+    <!-- default job type, meant for CPU-only jobs needing less than a whole node (< 256 CPUs) -->
+    <directives queue = "small">
+      <directive> --partition=small</directive>
+      <directive> --mem={{ mem_per_node }}G</directive>
+    </directives>
+    <!-- meant for larger CPU-only jobs, needing at least one node (> 256 CPUs) -->
+    <directives queue = "large">
+      <directive> --partition=large</directive>
+    </directives>
+    <!-- maximum walltime 2 hours -->
+    <directives queue = "devel">
+      <directive> --partition=small</directive>
+      <directive> --qos=devel</directive>
+      <directive> --mem={{ mem_per_node }}G</directive>
     </directives>
     <queues>
-      <queue walltimemax="00:59:00" nodemin="1" nodemax="288" default="true">normal</queue>
+      <queue walltimedef="00:59:00" walltimemax="144:00:00" nodemin="1" nodemax="1" default="true">small</queue>
+      <queue walltimedef="00:59:00" walltimemax="144:00:00" nodemin="1" nodemax="9">large</queue>
+      <queue walltimedef="00:59:00" walltimemax="01:59:00"  nodemin="1" nodemax="1">devel</queue>
     </queues>
   </batch_system>
 
