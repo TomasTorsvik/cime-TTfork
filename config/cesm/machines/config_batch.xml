@@ -572,9 +572,9 @@
       <directive> --mem={{ mem_per_node }}G</directive>
     </directives>
     <queues>
-      <queue walltimedef="00:59:00" walltimemax="144:00:00" nodemin="1" nodemax="1" default="true">small</queue>
-      <queue walltimedef="00:59:00" walltimemax="144:00:00" nodemin="1" nodemax="9">large</queue>
-      <queue walltimedef="00:59:00" walltimemax="01:59:00"  nodemin="1" nodemax="1">devel</queue>
+      <queue walltimemax="144:00:00" nodemin="1" nodemax="1" default="true">small</queue>
+      <queue walltimemax="144:00:00" nodemin="1" nodemax="9">large</queue>
+      <queue walltimemax="01:59:00"  nodemin="1" nodemax="1">devel</queue>
     </queues>
   </batch_system>
 

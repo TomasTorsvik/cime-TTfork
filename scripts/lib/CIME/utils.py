@@ -188,7 +188,7 @@ def _read_cime_config_file():
 
     cime_config_file = os.path.abspath(os.path.join(os.path.expanduser("~"),
                                                   ".cime","config"))
-    cime_config = configparser.SafeConfigParser()
+    cime_config = configparser.ConfigParser()
     if(os.path.isfile(cime_config_file)):
         cime_config.read(cime_config_file)
         for section in cime_config.sections():
