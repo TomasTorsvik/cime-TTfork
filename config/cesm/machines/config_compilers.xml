@@ -1183,7 +1183,7 @@ using a fortran linker.
    <append> -D$(OS) </append>
   </CPPDEFS>
   <FFLAGS>
-   <append> -xavx2 -no-fma </append>
+   <append> -march=core-avx2 -no-fma </append>
   </FFLAGS>
   <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
   <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
@@ -1196,8 +1196,11 @@ using a fortran linker.
     <append MODEL="cam"> -init=zero,arrays -fpe0 </append> <!-- avoid CAM crashed in specific PEs, need both -->
   </FFLAGS>
   <MPICC> mpiicx </MPICC>
-  <MPICXX> mpicpc </MPICXX> 
+  <MPICXX> mpiicpx </MPICXX>
   <MPIFC> mpiifx </MPIFC>
+  <SCC> icx </SCC>
+  <SCXX> icpx </SCXX>
+  <SFC> ifx </SFC>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
     <append>-mkl=sequential -lnetcdff -lnetcdf</append>
