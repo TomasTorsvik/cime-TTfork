@@ -152,18 +152,24 @@ def check_name(fullname, additional_chars=None, fullpath=False):
     False
     >>> check_name("mycase*mods")
     False
+    >>> check_name("/some/full/path/name/")
+    False
     """
 
-    chars = '+*?<>/{}[\]~`@:' # pylint: disable=anomalous-backslash-in-string
+    chars = r"+*?<>/{}[\]~`@:"
     if additional_chars is not None:
         chars += additional_chars
+    if fullname.endswith("/"):
+        return False
     if fullpath:
         _, name = os.path.split(fullname)
     else:
         name = fullname
-    match = re.search(r"["+re.escape(chars)+"]", name)
+    match = re.search(r"[" + re.escape(chars) + "]", name)
     if match is not None:
-        logger.warning("Illegal character {} found in name {}".format(match.group(0), name))
+        logger.warning(
+            "Illegal character {} found in name {}".format(match.group(0), name)
+        )
         return False
     return True
 
