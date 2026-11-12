@@ -4573,6 +4573,7 @@ esac
 fi # test "x$[]_AC_LANG_PREFIX[]LIBS" = "x"
 
 fi
+ac_cv_fc_libs=$(echo $ac_cv_fc_libs|sed -e's/-loopopt=1//')
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_fc_libs" >&5
 $as_echo "$ac_cv_fc_libs" >&6; }
 FCLIBS="$ac_cv_fc_libs"
