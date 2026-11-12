@@ -2317,6 +2317,7 @@ This allows using a different mpirun command to launch unit tests
         <command name="load">iimkl/2024a</command>
         <command name="load">Autoconf/2.72-GCCcore-13.3.0</command>
         <command name="load">XML-LibXML/2.0210-GCCcore-13.3.0</command>
+        <command name="load">NCO/5.2.9-intel-2024a-NorESM</command>
       </modules>
       <modules compiler='gnu' mpilib='openmpi'>
         <command name="--force purge"></command>
