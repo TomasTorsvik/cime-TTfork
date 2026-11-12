@@ -324,7 +324,7 @@ class OptimizeModel(object):
         raise NotImplementedError
 
     def write_pe_template(self, pefilename, ntasks, nthrds, roots):
-        from distutils.spawn import find_executable
+        from shutil import which
         from xml.etree import ElementTree as ET
         from CIME.utils import run_cmd
         logger.info("Writing pe node info to %s", pefilename)
@@ -348,7 +348,7 @@ class OptimizeModel(object):
         for k in roots:
             node = ET.SubElement(rootpe_node, 'rootpe_' + k)
             node.text = str(roots[k])
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
         if xmllint is not None:
             run_cmd("%s --format --output %s -" % (xmllint, pefilename),
                     input_str=ET.tostring(root))

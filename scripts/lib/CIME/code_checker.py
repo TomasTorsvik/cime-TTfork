@@ -8,14 +8,14 @@ from CIME.utils import run_cmd, run_cmd_no_fail, expect, get_cime_root, is_pytho
 
 from multiprocessing.dummy import Pool as ThreadPool
 #pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which
 
 logger = logging.getLogger(__name__)
 
 ###############################################################################
 def _run_pylint(on_file, interactive):
 ###############################################################################
-    pylint = find_executable("pylint")
+    pylint = which("pylint")
 
     cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
     cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"

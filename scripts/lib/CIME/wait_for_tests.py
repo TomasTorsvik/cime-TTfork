@@ -2,7 +2,7 @@
 import queue
 import os, time, threading, socket, signal, shutil, glob
 #pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which
 import logging
 import xml.etree.ElementTree as xmlet
 
@@ -264,7 +264,7 @@ ScpCommand: {4}
 # Dashboard start time
 NightlyStartTime: {5} UTC
 """.format(os.getcwd(), hostname, cdash_build_name, cdash_project,
-           find_executable("scp"), cdash_timestamp)
+           which("scp"), cdash_timestamp)
 
     with open("DartConfiguration.tcl", "w") as dart_fd:
         dart_fd.write(dart_config)

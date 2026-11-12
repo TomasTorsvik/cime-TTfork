@@ -2715,8 +2715,8 @@ def make_pylint_test(pyfile, all_files):
 
 def check_for_pylint():
     #pylint: disable=import-error
-    from distutils.spawn import find_executable
-    pylint = find_executable("pylint")
+    from shutil import which
+    pylint = which("pylint")
     if pylint is not None:
         output = run_cmd_no_fail("pylint --version")
         pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", output)

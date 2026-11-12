@@ -1,8 +1,8 @@
 #pylint: disable=import-error
-from distutils.spawn import find_executable
-has_gftp = find_executable("globus-url-copy")
-has_svn = find_executable("svn")
-has_wget = find_executable("wget")
+from shutil import which
+has_gftp = which("globus-url-copy")
+has_svn = which("svn")
+has_wget = which("wget")
 has_ftp = True
 try:
     from ftplib import FTP

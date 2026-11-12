@@ -18,7 +18,7 @@ The location of these files are needed by the script:
 
 from standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
-from distutils.spawn import find_executable
+from shutil import which
 import xml.etree.ElementTree as ET
 import operator
 
@@ -322,7 +322,7 @@ class GridTree(DataTree):
 
             if a is not None:
                 grids.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
         if xmllint is not None:
             run_cmd_no_fail("{} --format --output {} -".format(xmllint, newfilename),
                             input_str=ET.tostring(root))
@@ -354,7 +354,7 @@ class DomainTree(DataTree):
                 domains.append(ET.Element('WITH'))
             if a is not None:
                 domains.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
         if xmllint is not None:
             run_cmd_no_fail("{} --format --output {} -".format(xmllint, newfilename),
                             input_str=ET.tostring(root))
@@ -381,7 +381,7 @@ class GridmapTree(DataTree):
                 gridmaps.append(ET.Element('WITH'))
             if a is not None:
                 gridmaps.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
         if xmllint is not None:
             run_cmd_no_fail("{} --format --output {} -".format(xmllint, newfilename),
                             input_str=ET.tostring(root))
