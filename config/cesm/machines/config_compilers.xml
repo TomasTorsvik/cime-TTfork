@@ -1196,11 +1196,11 @@ using a fortran linker.
     <append MODEL="cam"> -init=zero,arrays -fpe0 </append> <!-- avoid CAM crashed in specific PEs, need both -->
   </FFLAGS>
   <MPICC> mpiicx </MPICC>
-  <MPICXX> mpicpc </MPICXX>
+  <MPICXX> mpiicpx </MPICXX>
   <MPIFC> mpiifx </MPIFC>
   <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
   <SLIBS>
-    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+    <append>-qmkl=sequential -lnetcdff -lnetcdf</append>
   </SLIBS>
 </compiler>
 
