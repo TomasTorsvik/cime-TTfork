@@ -122,7 +122,7 @@ class GridmapNode(DataNode):
                 self.data[k] = att.strip()
                 self.keys.append(k)
         self.sort()
-        for child in xmlnode.getchildren():
+        for child in list(xmlnode):
             self.data['maps'][child.tag] = child.text.strip()
     def sort(self):
         newlist = sorted(self.keys, key=operator.itemgetter(0))

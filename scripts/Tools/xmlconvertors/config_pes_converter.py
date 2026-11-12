@@ -117,7 +117,7 @@ class Cime5PesNode(PesNode):
             self.data['comment'] = commentnode.text
         for tag in ['ntasks', 'nthrds', 'rootpe']:
             node = pesnode.find(tag)
-            for child in node.getchildren():
+            for child in list(node):
                 self.data[tag][child.tag] = child.text.strip()
 
 class Cime2PesNode(PesNode):
