@@ -143,7 +143,7 @@ def submit(self, job=None, no_batch=False, prereq=None, allow_fail=False, resubm
     caseroot = self.get_value("CASEROOT")
     submit_options = os.path.join(caseroot, ".submit_options")
     if resubmit and os.path.exists(submit_options):
-        config = configparser.SafeConfigParser()
+        config = configparser.ConfigParser()
         config.read(submit_options)
         if not skip_pnl and config.has_option('SubmitOptions','skip_pnl'):
             skip_pnl = config.getboolean('SubmitOptions', 'skip_pnl')
